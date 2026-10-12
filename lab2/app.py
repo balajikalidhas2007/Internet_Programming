@@ -3,6 +3,13 @@ import sqlite3
 import os
 
 app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+GLOBAL_CSS = os.path.join(BASE_DIR, "global.css")
+
+
+@app.route("/global.css")
+def global_css():
+    return send_file(GLOBAL_CSS)
 
 
 # Create database

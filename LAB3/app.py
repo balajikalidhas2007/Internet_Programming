@@ -3,8 +3,15 @@ import sqlite3
 from flask import Flask, request, send_file, redirect, url_for
 
 app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+GLOBAL_CSS = os.path.join(BASE_DIR, "global.css")
 DB_PATH = os.path.join(os.path.dirname(__file__), "bus.db")
 HTML_PATH = os.path.join(os.path.dirname(__file__), "bus.html")
+
+
+@app.route("/global.css")
+def global_css():
+    return send_file(GLOBAL_CSS)
 
 
 def get_db():
