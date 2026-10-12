@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Train Reservation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            margin-bottom: 8px;
+        }
+        input, select {
+            margin-bottom: 8px;
+            padding: 4px;
+        }
+        input[type="submit"] {
+            padding: 6px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ONLINE TRAIN RESERVATION SYSTEM</h1>
+<hr>
+
+<!-- Reserve Ticket Section -->
+<div class="section">
+    <h2>Reserve Train Ticket</h2>
+    <form action="/book" method="post">
+        <label for="passenger_name">Passenger Name:</label>
+        <input type="text" id="passenger_name" name="passenger_name" required><br>
+
+        <label for="train_id">Select Train:</label>
+        <select id="train_id" name="train_id" required>
+            <option value="">-- Select a Train --</option>
+        </select><br>
+
+        <label for="num_passengers">Number of Passengers:</label>
+        <input type="number" id="num_passengers" name="num_passengers" min="1" value="1" required><br>
+
+        <input type="submit" value="Book Ticket">
+    </form>
+</div>
+
+<hr>
+
+<!-- Check PNR Section -->
+<div class="section">
+    <h2>Check PNR Status</h2>
+    <form action="/pnr" method="post">
+        <label for="pnr">PNR Number:</label>
+        <input type="text" id="pnr" name="pnr" required><br>
+
+        <input type="submit" value="Check PNR">
+    </form>
+</div>
+
+<hr>
+
+<!-- Admin Link -->
+<div class="section">
+    <h2>Administrator</h2>
+    <p><a href="/admin">Go to Admin Page</a></p>
+</div>
+
+<!-- Minimal JS to load train options -->
+<script>
+    fetch("/trains_options")
+        .then(function(response) { return response.text(); })
+        .then(function(data) {
+            document.getElementById("train_id").innerHTML =
+                '<option value="">-- Select a Train --</option>' + data;
+        });
+</script>
+
+</body>
+</html>

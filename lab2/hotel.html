@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Hotel Room Booking</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        input,
+        select {
+            margin: 5px;
+            padding: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Hotel Room Booking</h1>
+
+    <p>Welcome to our Hotel</p>
+
+    <hr>
+
+
+    <h2>Check Room Availability</h2>
+
+    <form action="/availability" method="POST">
+
+        <label>Room Type:</label>
+
+        <select name="room">
+
+            <option>Single Room</option>
+
+            <option>Double Room</option>
+
+            <option>Deluxe Room</option>
+
+            <option>Suite Room</option>
+
+        </select>
+
+        <br>
+
+        <label>Date:</label>
+
+        <input type="date" name="date" required>
+
+        <br><br>
+
+        <button type="submit">
+            Check Availability
+        </button>
+
+    </form>
+
+
+    <hr>
+
+
+    <h2>Book a Room</h2>
+
+    <form action="/book" method="POST">
+
+        <label>Name:</label>
+
+        <input type="text" name="name" required>
+
+        <br>
+
+        <label>Room Type:</label>
+
+        <select name="room">
+
+            <option>Single Room</option>
+
+            <option>Double Room</option>
+
+            <option>Deluxe Room</option>
+
+            <option>Suite Room</option>
+
+        </select>
+
+        <br>
+
+        <label>Check-in Date:</label>
+
+        <input type="date" name="date" required>
+
+        <br>
+
+        <label>Number of Guests:</label>
+
+        <input type="number" name="guests" min="1" required>
+
+        <br><br>
+
+        <button type="submit">
+            Book Room
+        </button>
+
+    </form>
+
+
+    <hr>
+
+
+    <h2>Administrator</h2>
+
+    <p>Administrator can view and cancel bookings.</p>
+
+    <a href="/admin">
+
+        <button>
+            Admin Page
+        </button>
+
+    </a>
+
+</body>
+
+</html>

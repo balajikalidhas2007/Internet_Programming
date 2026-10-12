@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Bus Ticket Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+            margin-bottom: 8px;
+        }
+        input, select {
+            margin-bottom: 8px;
+            padding: 4px;
+        }
+        input[type="submit"] {
+            padding: 6px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ONLINE BUS TICKET BOOKING SYSTEM</h1>
+<hr>
+
+<!-- Book Ticket Section -->
+<div class="section">
+    <h2>Book Bus Ticket</h2>
+    <form action="/book" method="post">
+        <label for="passenger_name">Passenger Name:</label>
+        <input type="text" id="passenger_name" name="passenger_name" required><br>
+
+        <label for="bus_id">Select Bus:</label>
+        <select id="bus_id" name="bus_id" required>
+            <option value="">-- Select a Bus --</option>
+        </select><br>
+
+        <label for="num_passengers">Number of Passengers:</label>
+        <input type="number" id="num_passengers" name="num_passengers" min="1" value="1" required><br>
+
+        <input type="submit" value="Book Ticket">
+    </form>
+</div>
+
+<hr>
+
+<!-- Cancel Ticket Section -->
+<div class="section">
+    <h2>Cancel Booking</h2>
+    <form action="/cancel" method="post">
+        <label for="booking_id">Booking ID:</label>
+        <input type="number" id="booking_id" name="booking_id" min="1" required><br>
+
+        <input type="submit" value="Cancel Ticket">
+    </form>
+</div>
+
+<hr>
+
+<!-- Admin Link -->
+<div class="section">
+    <h2>Administrator</h2>
+    <p><a href="/admin">Go to Admin Page</a></p>
+</div>
+
+<!-- Minimal JS to load bus options -->
+<script>
+    fetch("/buses_json")
+        .then(function(response) { return response.text(); })
+        .then(function(data) {
+            document.getElementById("bus_id").innerHTML =
+                '<option value="">-- Select a Bus --</option>' + data;
+        });
+</script>
+
+</body>
+</html>

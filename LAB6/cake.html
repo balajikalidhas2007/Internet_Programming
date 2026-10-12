@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Cake Ordering System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+            margin-bottom: 8px;
+        }
+        input, select, textarea {
+            margin-bottom: 8px;
+            padding: 4px;
+        }
+        input[type="submit"], input[type="button"], button {
+            padding: 6px 16px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ONLINE CAKE ORDERING SYSTEM</h1>
+<hr>
+
+<!-- ================= USER SECTION ================= -->
+<h2>USER</h2>
+
+<!-- 1. View Available Cakes -->
+<div class="section">
+    <h3>Available Cakes</h3>
+    <input type="button" value="View Cake List" onclick="loadCakes()">
+    <div id="cakes_list_container" style="margin-top: 10px;"></div>
+</div>
+
+<!-- 2. Order Details / Buy Cake -->
+<div class="section">
+    <h3>Order Details</h3>
+    <form action="/place_order" method="post">
+        <label for="cake_id">Select Cake:</label>
+        <select id="cake_id" name="cake_id" required>
+            <option value="">-- Select a Cake --</option>
+        </select><br>
+
+        <label for="customer_name">Customer Name:</label>
+        <input type="text" id="customer_name" name="customer_name" required><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
+        <label for="address">Shipping Address:</label>
+        <textarea id="address" name="address" rows="3" cols="30" required></textarea><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" min="1" value="1" required><br>
+
+        <input type="submit" value="Place Order">
+    </form>
+</div>
+
+<!-- 3. My Orders & Shipping Status -->
+<div class="section">
+    <h3>My Orders / Shipping Status</h3>
+    <form action="/my_orders" method="post">
+        <label for="search_phone">Phone Number (optional):</label>
+        <input type="text" id="search_phone" name="phone" placeholder="Enter phone or leave blank">
+        <input type="submit" value="View Orders">
+    </form>
+</div>
+
+<hr>
+
+<!-- ================= ADMIN SECTION ================= -->
+<h2>ADMIN</h2>
+<div class="section">
+    <p>Manage cake inventory, add new cakes, view customer orders, and update shipping status.</p>
+    <p><a href="/admin"><b>[ Go to Admin Page ]</b></a></p>
+</div>
+
+<!-- JavaScript to load cakes and handle selection -->
+<script>
+    // Load cake dropdown options on page load
+    function loadCakesDropdown() {
+        fetch("/cakes_options")
+            .then(function(res) { return res.text(); })
+            .then(function(options) {
+                document.getElementById("cake_id").innerHTML =
+                    '<option value="">-- Select a Cake --</option>' + options;
+            });
+    }
+
+    // Load available cakes table
+    function loadCakes() {
+        fetch("/cakes_list")
+            .then(function(res) { return res.text(); })
+            .then(function(html) {
+                document.getElementById("cakes_list_container").innerHTML = html;
+            });
+    }
+
+    // Select cake from table directly into order form
+    function selectCake(id, name, price) {
+        document.getElementById("cake_id").value = id;
+        document.getElementById("customer_name").focus();
+    }
+
+    // Initialize on load
+    window.onload = function() {
+        loadCakes();
+        loadCakesDropdown();
+    };
+</script>
+
+</body>
+</html>

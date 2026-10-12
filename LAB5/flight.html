@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Flight Reservation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            margin-bottom: 8px;
+        }
+        input, select {
+            margin-bottom: 8px;
+            padding: 4px;
+        }
+        input[type="submit"], input[type="button"], button {
+            padding: 6px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ONLINE FLIGHT RESERVATION SYSTEM</h1>
+<hr>
+
+<!-- Available Flights by Date Section -->
+<div class="section">
+    <h2>Available Flights</h2>
+    <label for="journey_date">Select Journey Date:</label>
+    <select id="journey_date">
+        <option value="">-- Select Date --</option>
+    </select><br><br>
+
+    <input type="button" value="Show Available Flights" onclick="loadFlightsByDate()"><br>
+
+    <div id="flights_display" style="margin-top: 15px;"></div>
+</div>
+
+<hr>
+
+<!-- Book Ticket Section -->
+<div class="section">
+    <h2>Book Flight Ticket</h2>
+    <form action="/book" method="post">
+        <label for="passenger_name">Passenger Name:</label>
+        <input type="text" id="passenger_name" name="passenger_name" required><br>
+
+        <label for="flight_id">Select Flight:</label>
+        <select id="flight_id" name="flight_id" required>
+            <option value="">-- Select a Flight --</option>
+        </select><br>
+
+        <label for="num_passengers">Number of Passengers:</label>
+        <input type="number" id="num_passengers" name="num_passengers" min="1" value="1" required><br>
+
+        <input type="submit" value="Book Ticket">
+    </form>
+</div>
+
+<hr>
+
+<!-- Check Booking Status Section -->
+<div class="section">
+    <h2>Check Booking Status</h2>
+    <form action="/status" method="post">
+        <label for="ticket_id">Ticket ID:</label>
+        <input type="text" id="ticket_id" name="ticket_id" required><br>
+
+        <input type="submit" value="Check Status">
+    </form>
+</div>
+
+<hr>
+
+<!-- Cancel Ticket Section -->
+<div class="section">
+    <h2>Cancel Ticket</h2>
+    <form action="/cancel" method="post">
+        <label for="ticket_id_cancel">Ticket ID:</label>
+        <input type="text" id="ticket_id_cancel" name="ticket_id_cancel" required><br>
+
+        <input type="submit" value="Cancel Ticket">
+    </form>
+</div>
+
+<hr>
+
+<!-- Admin Link -->
+<div class="section">
+    <h2>Administrator</h2>
+    <p><a href="/admin">Go to Admin Page</a></p>
+</div>
+
+<!-- Script to handle dates and flights -->
+<script>
+    // Load available dates into dropdown on page load
+    fetch("/flight_dates")
+        .then(function(response) { return response.text(); })
+        .then(function(data) {
+            document.getElementById("journey_date").innerHTML =
+                '<option value="">-- Select Date --</option>' + data;
+        });
+
+    // Load flight options into booking dropdown
+    fetch("/flights_options")
+        .then(function(response) { return response.text(); })
+        .then(function(data) {
+            document.getElementById("flight_id").innerHTML =
+                '<option value="">-- Select a Flight --</option>' + data;
+        });
+
+    // Load available flights for the selected date
+    function loadFlightsByDate() {
+        var selectedDate = document.getElementById("journey_date").value;
+        if (!selectedDate) {
+            alert("Please select a journey date.");
+            return;
+        }
+        fetch("/flights_by_date?date=" + encodeURIComponent(selectedDate))
+            .then(function(response) { return response.text(); })
+            .then(function(html) {
+                document.getElementById("flights_display").innerHTML = html;
+            });
+
+        // Filter the booking dropdown to only flights for this date
+        fetch("/flights_options?date=" + encodeURIComponent(selectedDate))
+            .then(function(response) { return response.text(); })
+            .then(function(data) {
+                document.getElementById("flight_id").innerHTML =
+                    '<option value="">-- Select a Flight --</option>' + data;
+            });
+    }
+
+    // Helper to select a flight directly from the table
+    function selectFlight(id) {
+        document.getElementById("flight_id").value = id;
+        document.getElementById("passenger_name").focus();
+    }
+</script>
+
+</body>
+</html>

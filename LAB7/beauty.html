@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Beauty Parlour Appointment System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+            margin-bottom: 8px;
+        }
+        input, select {
+            margin-bottom: 8px;
+            padding: 4px;
+        }
+        input[type="submit"], input[type="button"], button {
+            padding: 6px 16px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ONLINE BEAUTY PARLOUR APPOINTMENT SYSTEM</h1>
+<hr>
+
+<!-- ================= USER SECTION ================= -->
+<h2>USER</h2>
+
+<!-- 1. Available Services -->
+<div class="section">
+    <h3>Available Services</h3>
+    <div id="services_container">Loading services...</div>
+</div>
+
+<!-- 2. Available Stylists -->
+<div class="section">
+    <h3>Available Stylists</h3>
+    <div id="stylists_container">Loading stylists...</div>
+</div>
+
+<!-- 3. Book Appointment -->
+<div class="section">
+    <h3>Book Appointment</h3>
+    <form action="/book" method="post">
+        <label for="customer_name">Customer Name:</label>
+        <input type="text" id="customer_name" name="customer_name" required><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
+        <label for="service_id">Select Service:</label>
+        <select id="service_id" name="service_id" required>
+            <option value="">-- Select Service --</option>
+        </select><br>
+
+        <label for="stylist_id">Select Stylist:</label>
+        <select id="stylist_id" name="stylist_id" required>
+            <option value="">-- Select Stylist --</option>
+        </select><br>
+
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date" required><br>
+
+        <label for="time">Select Time:</label>
+        <select id="time" name="time" required>
+            <option value="">-- Select Time Slot --</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:30 AM">11:30 AM</option>
+            <option value="02:00 PM">02:00 PM</option>
+            <option value="03:30 PM">03:30 PM</option>
+            <option value="05:00 PM">05:00 PM</option>
+            <option value="06:30 PM">06:30 PM</option>
+        </select><br>
+
+        <input type="submit" value="Book Appointment">
+    </form>
+</div>
+
+<!-- 4. My Appointments -->
+<div class="section">
+    <h3>My Appointments</h3>
+    <form action="/my_appointments" method="post">
+        <label for="search_phone">Phone (optional):</label>
+        <input type="text" id="search_phone" name="phone" placeholder="Enter phone or leave blank">
+        <input type="submit" value="View Appointments">
+    </form>
+</div>
+
+<!-- 5. Cancel Appointment -->
+<div class="section">
+    <h3>Cancel Appointment</h3>
+    <form action="/cancel_appointment" method="post">
+        <label for="appointment_id">Appointment ID:</label>
+        <input type="number" id="appointment_id" name="appointment_id" required>
+        <input type="submit" value="Cancel Appointment">
+    </form>
+</div>
+
+<hr>
+
+<!-- ================= ADMIN SECTION ================= -->
+<h2>ADMIN / SALON MANAGER</h2>
+<div class="section">
+    <p>Manage beauty services, stylists, view all appointments, and update appointment status.</p>
+    <p><a href="/admin"><b>[ Go to Admin Page ]</b></a></p>
+</div>
+
+<!-- Minimal JavaScript to load options and tables -->
+<script>
+    // Load services table
+    fetch("/services_list")
+        .then(function(res) { return res.text(); })
+        .then(function(html) {
+            document.getElementById("services_container").innerHTML = html;
+        });
+
+    // Load stylists table
+    fetch("/stylists_list")
+        .then(function(res) { return res.text(); })
+        .then(function(html) {
+            document.getElementById("stylists_container").innerHTML = html;
+        });
+
+    // Load dropdown options for booking
+    fetch("/get_data")
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            document.getElementById("service_id").innerHTML =
+                '<option value="">-- Select Service --</option>' + data.services;
+            document.getElementById("stylist_id").innerHTML =
+                '<option value="">-- Select Stylist --</option>' + data.stylists;
+        });
+</script>
+
+</body>
+</html>

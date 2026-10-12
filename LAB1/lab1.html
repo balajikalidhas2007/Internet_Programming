@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Library - Add Books</title>
+</head>
+
+<body>
+
+    <h1>Library Management - Add Books</h1>
+    <p>Librarian can add books to the library database.</p>
+
+    <h3>Add New Book</h3>
+    <form id="bookForm" onsubmit="addBook(event)">
+        <label>Book ID:</label><br>
+        <input type="text" id="book_id"><br><br>
+        <label>Title:</label><br>
+        <input type="text" id="title"><br><br>
+        <label>Author:</label><br>
+        <input type="text" id="author"><br><br>
+        <label>Department:</label><br>
+        <select id="dept">
+            <option>CSE</option>
+            <option>ECE</option>
+            <option>MECH</option>
+            <option>CIVIL</option>
+        </select><br><br>
+        <label>Quantity:</label><br>
+        <input type="number" id="qty" value="1"><br><br>
+        <button type="submit">Add Book</button>
+    </form>
+    <p id="msg"></p>
+
+    <hr>
+
+    <h3>Books in Library</h3>
+    <table border="1" cellpadding="5" id="bookTable">
+        <tr>
+            <th>Book ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Department</th>
+            <th>Quantity</th>
+        </tr>
+    </table>
+
+    <script>
+        // load books when page opens
+        loadBooks();
+        loadCatalog();
+
+        function addBook(e) {
+            e.preventDefault();
+
+            var data = {
+                book_id: document.getElementById("book_id").value,
+                title: document.getElementById("title").value,
+                author: document.getElementById("author").value,
+                dept: document.getElementById("dept").value,
+                qty: document.getElementById("qty").value
+            };
+
+            fetch("/add_book", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (result) {
+                    document.getElementById("msg").innerText = result.message;
+                    document.getElementById("bookForm").reset();
+                    loadBooks();
+                    loadCatalog();
+                });
+        }
+
+        function loadBooks() {
+            fetch("/get_books")
+                .then(function (res) { return res.json(); })
+                .then(function (books) {
+                    var table = document.getElementById("bookTable");
+
+                    // keep only header row
+                    while (table.rows.length > 1) {
+                        table.deleteRow(1);
+                    }
+
+                    // add each book as a row
+                    for (var i = 0; i < books.length; i++) {
+                        var row = table.insertRow();
+                        row.insertCell(0).innerText = books[i][0];
+                        row.insertCell(1).innerText = books[i][1];
+                        row.insertCell(2).innerText = books[i][2];
+                        row.insertCell(3).innerText = books[i][3];
+                        row.insertCell(4).innerText = books[i][4];
+                    }
+                });
+        }
+
+        // student section functions
+
+        function loadCatalog() {
+            fetch("/get_books")
+                .then(function (res) { return res.json(); })
+                .then(function (books) {
+                    var table = document.getElementById("catalogTable");
+
+                    while (table.rows.length > 1) {
+                        table.deleteRow(1);
+                    }
+
+                    for (var i = 0; i < books.length; i++) {
+                        var row = table.insertRow();
+                        row.insertCell(0).innerText = books[i][0];
+                        row.insertCell(1).innerText = books[i][1];
+                        row.insertCell(2).innerText = books[i][2];
+                        row.insertCell(3).innerText = books[i][3];
+                        row.insertCell(4).innerText = books[i][4];
+                    }
+                });
+        }
+
+        function searchBook(e) {
+            e.preventDefault();
+            var query = document.getElementById("search_query").value;
+
+            fetch("/search_book?q=" + query)
+                .then(function (res) { return res.json(); })
+                .then(function (result) {
+                    var div = document.getElementById("searchResult");
+
+                    if (result.length > 0) {
+                        var html = "<b>Book Found!</b><br>";
+                        for (var i = 0; i < result.length; i++) {
+                            html += "ID: " + result[i][0] + " | Title: " + result[i][1];
+                            html += " | Author: " + result[i][2] + " | Dept: " + result[i][3];
+                            html += " | Qty: " + result[i][4] + "<br>";
+                        }
+                        div.innerHTML = html;
+                    } else {
+                        div.innerHTML = "<b>Book Not Found!</b>";
+                    }
+                });
+        }
+
+        function registerStudent(e) {
+            e.preventDefault();
+
+            var data = {
+                name: document.getElementById("stu_name").value,
+                roll: document.getElementById("stu_roll").value,
+                email: document.getElementById("stu_email").value,
+                dept: document.getElementById("stu_dept").value,
+                year: document.getElementById("stu_year").value
+            };
+
+            fetch("/register_student", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (result) {
+                    document.getElementById("stu_msg").innerText = result.message;
+                    document.getElementById("stuForm").reset();
+                });
+        }
+    </script>
+
+    <hr>
+    <hr>
+
+    <!-- ===== STUDENT SECTION ===== -->
+    <h1>Student Section</h1>
+
+    <h3>Book Catalog</h3>
+    <table border="1" cellpadding="5" id="catalogTable">
+        <tr>
+            <th>Book ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Department</th>
+            <th>Quantity</th>
+        </tr>
+    </table>
+
+    <br>
+
+    <h3>Search Book</h3>
+    <form onsubmit="searchBook(event)">
+        <label>Enter Book Title:</label>
+        <input type="text" id="search_query" placeholder="Enter title to search">
+        <button type="submit">Search</button>
+    </form>
+    <p id="searchResult"></p>
+
+    <hr>
+
+    <h3>Student Registration</h3>
+    <form id="stuForm" onsubmit="registerStudent(event)">
+        <label>Full Name:</label><br>
+        <input type="text" id="stu_name"><br><br>
+        <label>Roll Number:</label><br>
+        <input type="text" id="stu_roll"><br><br>
+        <label>Email:</label><br>
+        <input type="email" id="stu_email"><br><br>
+        <label>Department:</label><br>
+        <select id="stu_dept">
+            <option>CSE</option>
+            <option>ECE</option>
+            <option>MECH</option>
+            <option>CIVIL</option>
+        </select><br><br>
+        <label>Year:</label><br>
+        <select id="stu_year">
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+        </select><br><br>
+        <button type="submit">Register</button>
+    </form>
+    <p id="stu_msg"></p>
+
+</body>
+
+</html>
