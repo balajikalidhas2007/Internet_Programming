@@ -1,0 +1,96 @@
+/* ==========================================================================
+   Global Minimal Stylesheet for Internet Programming Lab Projects
+   ========================================================================== */
+
+/* Page Background and Default Typography */
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f5f8fc;
+    color: #333333;
+}
+
+/* Headings */
+h1 {
+    color: #1e4d6b;
+    margin-bottom: 12px;
+}
+
+h2, h3, h4, h5, h6 {
+    color: #245b7a;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Links */
+a {
+    color: #1e5a8a;
+}
+
+/* Horizontal Rule */
+hr {
+    border: none;
+    border-top: 1px solid #c5d3df;
+    margin: 20px 0;
+}
+
+/* Sections, Forms, and Content Containers */
+section,
+form,
+.section,
+.box {
+    background-color: #ffffff;
+    border: 1px solid #c5d3df;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+/* Form Inputs, Select Dropdowns, Textareas */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    padding: 6px 8px;
+    border: 1px solid #b0c2d0;
+    background-color: #ffffff;
+    color: #333333;
+    box-sizing: border-box;
+}
+
+/* Buttons and Submit Inputs */
+button,
+input[type="submit"],
+input[type="button"] {
+    background-color: #2d6a8e;
+    color: #ffffff;
+    border: 1px solid #245b7a;
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background-color: #1e4d6b;
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+    background-color: #ffffff;
+    margin: 10px 0;
+}
+
+th,
+td {
+    border: 1px solid #c5d3df;
+    padding: 8px 12px;
+}
+
+th {
+    background-color: #e8eff5;
+    color: #1e4d6b;
+}
