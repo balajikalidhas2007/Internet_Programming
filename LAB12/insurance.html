@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 30px;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #1e4d6b;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        h2 {
+            color: #245b7a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2d6a8e;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #dcdcdc;
+            margin: 20px 0;
+        }
+        .section {
+            background-color: #fafbfc;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 18px;
+            margin: 18px 0;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            vertical-align: top;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 280px;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+            border: 1px solid #b0c2d0;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="submit"],
+        input[type="button"],
+        button {
+            background-color: #2d6a8e;
+            color: #ffffff;
+            border: 1px solid #245b7a;
+            padding: 7px 18px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        input[type="submit"]:hover,
+        input[type="button"]:hover,
+        button:hover {
+            background-color: #1e4d6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background-color: #ffffff;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: #eef3f7;
+            color: #1e4d6b;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .notice {
+            color: #555;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        a {
+            color: #1e5a8a;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .nav-links {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .nav-links a {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>INSURANCE MANAGEMENT SYSTEM</h1>
+    <p style="text-align: center; color: #666;">Comprehensive Portal for Customers, Agents and Insurance Administrators</p>
+    <div class="nav-links">
+        <a href="#user-section">Customer Portal</a> |
+        <a href="#agent-section">Agent Operations</a> |
+        <a href="/admin">Admin Panel</a>
+    </div>
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- 1. USER SECTION                            -->
+    <!-- ========================================== -->
+    <h2 id="user-section">1. CUSTOMER PORTAL</h2>
+
+    <!-- Available Policies -->
+    <div class="section">
+        <h3>Available Insurance Policies</h3>
+        <button type="button" onclick="loadPolicies()">Refresh Policies</button>
+        <div id="policies_container" style="margin-top: 10px;">Loading policies...</div>
+    </div>
+
+    <!-- Submit Enquiry -->
+    <div class="section">
+        <h3>Submit an Insurance Enquiry</h3>
+        <form action="/submit_enquiry" method="post">
+            <label for="customer_name">Your Name:</label>
+            <input type="text" id="customer_name" name="customer_name" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required><br>
+
+            <label for="policy_id">Select Policy:</label>
+            <select id="policy_id" name="policy_id" required>
+                <option value="">-- Select Insurance Policy --</option>
+            </select><br>
+
+            <label for="message">Enquiry Details:</label>
+            <textarea id="message" name="message" rows="3" style="width: 280px;" placeholder="I want more info on coverage, premiums..." required></textarea><br>
+
+            <input type="submit" value="Submit Policy Enquiry">
+        </form>
+    </div>
+
+    <!-- View My Policy Details & Status -->
+    <div class="section">
+        <h3>View Personal Policy Details & Status</h3>
+        <form action="/my_policies" method="post">
+            <label for="search_phone">Customer Phone Number:</label>
+            <input type="text" id="search_phone" name="phone" placeholder="Enter phone number or leave blank" required>
+            <input type="submit" value="Check Policy Status">
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- 2. AGENT SECTION                           -->
+    <!-- ========================================== -->
+    <h2 id="agent-section">2. AGENT OPERATIONS PORTAL</h2>
+
+    <!-- View Customers & Details -->
+    <div class="section">
+        <h3>Agent Customer List</h3>
+        <button type="button" onclick="loadCustomers()">View Registered Customers</button>
+        <div id="customers_container" style="margin-top: 10px;"></div>
+    </div>
+
+    <!-- Add New Customer -->
+    <div class="section">
+        <h3>Add New Customer</h3>
+        <form action="/agent/add_customer" method="post">
+            <label for="cust_name">Full Name:</label>
+            <input type="text" id="cust_name" name="name" required><br>
+
+            <label for="cust_phone">Phone Number:</label>
+            <input type="text" id="cust_phone" name="phone" required><br>
+
+            <label for="cust_email">Email Address:</label>
+            <input type="email" id="cust_email" name="email" required><br>
+
+            <label for="cust_address">Address / City:</label>
+            <textarea id="cust_address" name="address" rows="2" style="width: 280px;" required></textarea><br>
+
+            <label for="agent_id">Assigned Agent:</label>
+            <select id="agent_id" name="agent_id" required>
+                <option value="">-- Select Agent --</option>
+            </select><br>
+
+            <input type="submit" value="Register Customer">
+        </form>
+    </div>
+
+    <!-- Add Insurance Policy for Customer -->
+    <div class="section">
+        <h3>Add Insurance Policy for a Customer</h3>
+        <form action="/agent/issue_policy" method="post">
+            <label for="assign_customer_id">Select Customer:</label>
+            <select id="assign_customer_id" name="customer_id" required>
+                <option value="">-- Select Customer --</option>
+            </select><br>
+
+            <label for="assign_policy_id">Select Policy:</label>
+            <select id="assign_policy_id" name="policy_id" required>
+                <option value="">-- Select Policy --</option>
+            </select><br>
+
+            <label for="assign_agent_id">Servicing Agent:</label>
+            <select id="assign_agent_id" name="agent_id" required>
+                <option value="">-- Select Agent --</option>
+            </select><br>
+
+            <label for="start_date">Policy Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required><br>
+
+            <input type="submit" value="Issue Customer Policy">
+        </form>
+    </div>
+
+    <!-- View All Customer Policies -->
+    <div class="section">
+        <h3>All Customer Policies & Status</h3>
+        <button type="button" onclick="loadCustomerPolicies()">View All Policies</button>
+        <div id="customer_policies_container" style="margin-top: 10px;"></div>
+    </div>
+
+    <!-- Update Policy Status -->
+    <div class="section">
+        <h3>Update Policy Status</h3>
+        <form action="/agent/update_policy_status" method="post">
+            <label for="update_record_id">Select Customer Policy:</label>
+            <select id="update_record_id" name="record_id" style="width: 420px;" required>
+                <option value="">-- Select Policy Record --</option>
+            </select><br>
+
+            <label for="new_status">Updated Status:</label>
+            <select id="new_status" name="status" required>
+                <option value="Active">Active</option>
+                <option value="Matured">Matured</option>
+                <option value="Expired">Expired</option>
+                <option value="Lapsed">Lapsed</option>
+            </select><br>
+
+            <input type="submit" value="Update Status">
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- 3. ADMIN SECTION LINK                      -->
+    <!-- ========================================== -->
+    <h2>3. INSURANCE ADMINISTRATION</h2>
+    <div class="section">
+        <p>Admin features: View all agents, manage insurance policies, configure premiums & terms, and inspect all policy records.</p>
+        <p><a href="/admin"><b>[ Go to Insurance Admin Panel &raquo; ]</b></a></p>
+    </div>
+
+    <script>
+        var policiesData = [];
+        var agentsData = [];
+        var customersData = [];
+        var customerPoliciesData = [];
+
+        function loadPolicies() {
+            fetch("/api/policies")
+                .then(function(res) { return res.json(); })
+                .then(function(policies) {
+                    policiesData = policies;
+                    renderPoliciesTable(policies);
+                    populatePolicyDropdowns(policies);
+                });
+        }
+
+        function renderPoliciesTable(policies) {
+            var container = document.getElementById("policies_container");
+            var html = "<table>";
+            html += "<tr><th>ID</th><th>Policy Name</th><th>Type</th><th>Description</th><th>Premium (₹)</th><th>Duration</th><th>Action</th></tr>";
+            policies.forEach(function(p) {
+                html += "<tr>";
+                html += "<td>" + p.id + "</td>";
+                html += "<td><b>" + p.policy_name + "</b></td>";
+                html += "<td>" + p.policy_type + "</td>";
+                html += "<td>" + p.description + "</td>";
+                html += "<td>₹" + Number(p.premium_amount).toLocaleString('en-IN') + "/yr</td>";
+                html += "<td>" + p.duration_years + " Years</td>";
+                html += "<td><button type='button' onclick='selectForEnquiry(" + p.id + ")'>Enquire</button></td>";
+                html += "</tr>";
+            });
+            html += "</table>";
+            container.innerHTML = html;
+        }
+
+        function populatePolicyDropdowns(policies) {
+            var enqSelect = document.getElementById("policy_id");
+            var assignSelect = document.getElementById("assign_policy_id");
+            enqSelect.innerHTML = '<option value="">-- Select Insurance Policy --</option>';
+            assignSelect.innerHTML = '<option value="">-- Select Policy --</option>';
+
+            policies.forEach(function(p) {
+                var opt = '<option value="' + p.id + '">' + p.policy_name + ' (' + p.policy_type + ' - ₹' + p.premium_amount + '/yr)</option>';
+                enqSelect.innerHTML += opt;
+                assignSelect.innerHTML += opt;
+            });
+        }
+
+        function selectForEnquiry(id) {
+            document.getElementById("policy_id").value = id;
+            document.getElementById("customer_name").focus();
+            document.getElementById("policy_id").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadAgents() {
+            fetch("/api/agents")
+                .then(function(res) { return res.json(); })
+                .then(function(agents) {
+                    agentsData = agents;
+                    var agentSelect = document.getElementById("agent_id");
+                    var assignAgent = document.getElementById("assign_agent_id");
+                    agentSelect.innerHTML = '<option value="">-- Select Agent --</option>';
+                    assignAgent.innerHTML = '<option value="">-- Select Agent --</option>';
+                    agents.forEach(function(a) {
+                        var opt = '<option value="' + a.id + '">' + a.name + ' (' + a.region + ')</option>';
+                        agentSelect.innerHTML += opt;
+                        assignAgent.innerHTML += opt;
+                    });
+                });
+        }
+
+        function loadCustomers() {
+            fetch("/api/customers")
+                .then(function(res) { return res.json(); })
+                .then(function(customers) {
+                    customersData = customers;
+                    var container = document.getElementById("customers_container");
+                    var html = "<table><tr><th>ID</th><th>Customer Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Assigned Agent</th></tr>";
+                    customers.forEach(function(c) {
+                        html += "<tr><td>" + c.id + "</td><td><b>" + c.name + "</b></td><td>" + c.phone + "</td><td>" + c.email + "</td><td>" + c.address + "</td><td>" + (c.agent_name || 'None') + "</td></tr>";
+                    });
+                    html += "</table>";
+                    container.innerHTML = html;
+
+                    var custSelect = document.getElementById("assign_customer_id");
+                    custSelect.innerHTML = '<option value="">-- Select Customer --</option>';
+                    customers.forEach(function(c) {
+                        custSelect.innerHTML += '<option value="' + c.id + '">' + c.name + ' (' + c.phone + ')</option>';
+                    });
+                });
+        }
+
+        function loadCustomerPolicies() {
+            fetch("/api/customer_policies")
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    customerPoliciesData = data;
+                    var container = document.getElementById("customer_policies_container");
+                    var updateSelect = document.getElementById("update_record_id");
+                    updateSelect.innerHTML = '<option value="">-- Select Policy Record --</option>';
+
+                    var html = "<table><tr><th>Record ID</th><th>Customer</th><th>Phone</th><th>Policy</th><th>Type</th><th>Premium</th><th>Start Date</th><th>Agent</th><th>Status</th></tr>";
+                    data.forEach(function(cp) {
+                        var statusColor = cp.status === 'Active' ? 'green' : (cp.status === 'Matured' ? 'blue' : 'red');
+                        html += "<tr>";
+                        html += "<td>#" + cp.id + "</td>";
+                        html += "<td><b>" + cp.customer_name + "</b></td>";
+                        html += "<td>" + cp.customer_phone + "</td>";
+                        html += "<td>" + cp.policy_name + "</td>";
+                        html += "<td>" + cp.policy_type + "</td>";
+                        html += "<td>₹" + Number(cp.premium_amount).toLocaleString('en-IN') + "</td>";
+                        html += "<td>" + cp.start_date + "</td>";
+                        html += "<td>" + cp.agent_name + "</td>";
+                        html += "<td style='color:" + statusColor + "; font-weight:bold;'>" + cp.status + "</td>";
+                        html += "</tr>";
+
+                        updateSelect.innerHTML += '<option value="' + cp.id + '">Record #' + cp.id + ' - ' + cp.customer_name + ' (' + cp.policy_name + ') - Current: ' + cp.status + '</option>';
+                    });
+                    html += "</table>";
+                    container.innerHTML = html;
+                });
+        }
+
+        window.onload = function() {
+            loadPolicies();
+            loadAgents();
+            loadCustomers();
+            loadCustomerPolicies();
+        };
+    </script>
+</body>
+</html>

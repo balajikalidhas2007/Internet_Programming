@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House and Land Finder System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 30px;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #1e4d6b;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        h2 {
+            color: #245b7a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2d6a8e;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #dcdcdc;
+            margin: 20px 0;
+        }
+        .section {
+            background-color: #fafbfc;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 18px;
+            margin: 18px 0;
+        }
+        label {
+            display: inline-block;
+            width: 170px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            vertical-align: top;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 280px;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+            border: 1px solid #b0c2d0;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="submit"],
+        input[type="button"],
+        button {
+            background-color: #2d6a8e;
+            color: #ffffff;
+            border: 1px solid #245b7a;
+            padding: 7px 18px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        input[type="submit"]:hover,
+        input[type="button"]:hover,
+        button:hover {
+            background-color: #1e4d6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background-color: #ffffff;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: #eef3f7;
+            color: #1e4d6b;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .notice {
+            color: #555;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        a {
+            color: #1e5a8a;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-item label {
+            width: auto;
+            margin-bottom: 4px;
+        }
+        .filter-item input,
+        .filter-item select {
+            width: 180px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>HOUSE AND LAND FINDER SYSTEM</h1>
+    <p style="text-align: center; color: #666;">Discover Residential Houses, Commercial Lands & Plots</p>
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- USER SECTION                               -->
+    <!-- ========================================== -->
+    <h2>FIND PROPERTIES</h2>
+
+    <!-- 1, 2, 3, 4: Property Listings & Filtering -->
+    <div class="section">
+        <h3>1. Search & Filter Properties</h3>
+        <div class="filter-row">
+            <div class="filter-item">
+                <label for="filter_type">Property Type:</label>
+                <select id="filter_type">
+                    <option value="All">All Types</option>
+                    <option value="House">House</option>
+                    <option value="Land">Land</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="filter_location">Location / Area:</label>
+                <input type="text" id="filter_location" placeholder="e.g. OMR, Anna Nagar">
+            </div>
+            <div class="filter-item">
+                <label for="filter_min_price">Min Price (₹):</label>
+                <input type="number" id="filter_min_price" placeholder="Min price">
+            </div>
+            <div class="filter-item">
+                <label for="filter_max_price">Max Price (₹):</label>
+                <input type="number" id="filter_max_price" placeholder="Max price">
+            </div>
+            <div>
+                <button type="button" onclick="applyFilters()">Search Properties</button>
+                <button type="button" onclick="resetFilters()" style="background-color: #6c757d; border-color: #5a6268;">Reset</button>
+            </div>
+        </div>
+        <div id="properties_container">Loading property listings...</div>
+    </div>
+
+    <!-- 5: Property Details Section -->
+    <div class="section" id="details_section" style="display: none; border-left: 4px solid #2d6a8e;">
+        <h3>2. Property Details</h3>
+        <div id="details_content"></div>
+        <button type="button" onclick="document.getElementById('details_section').style.display='none'">Close Details</button>
+    </div>
+
+    <!-- 6: Submit Enquiry Form -->
+    <div class="section">
+        <h3>3. Submit a Property Enquiry</h3>
+        <form action="/submit_enquiry" method="post">
+            <label for="property_id">Select Property:</label>
+            <select id="property_id" name="property_id" required>
+                <option value="">-- Select Property --</option>
+            </select><br>
+
+            <label for="customer_name">Your Name:</label>
+            <input type="text" id="customer_name" name="customer_name" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required><br>
+
+            <label for="message">Enquiry Message:</label>
+            <textarea id="message" name="message" rows="3" style="width: 280px;" placeholder="I am interested in this property. Please share more details..." required></textarea><br>
+
+            <input type="submit" value="Submit Enquiry">
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- ADMIN SECTION LINK                         -->
+    <!-- ========================================== -->
+    <h2>REAL ESTATE ADMINISTRATION</h2>
+    <div class="section">
+        <p>Manage property listings, modify prices and availability status, view buyer enquiries, and manage inventory.</p>
+        <p><a href="/admin"><b>[ Go to Admin Panel &raquo; ]</b></a></p>
+    </div>
+
+    <script>
+        var allProperties = [];
+
+        function loadProperties() {
+            fetch("/api/properties")
+                .then(function(res) { return res.json(); })
+                .then(function(props) {
+                    allProperties = props;
+                    renderProperties(props);
+                    populateEnquiryDropdown(props);
+                });
+        }
+
+        function renderProperties(props) {
+            var container = document.getElementById("properties_container");
+            if (props.length === 0) {
+                container.innerHTML = "<p>No properties match your filter criteria.</p>";
+                return;
+            }
+            var html = "<table>";
+            html += "<tr><th>ID</th><th>Property Name</th><th>Type</th><th>Location</th><th>Price (₹)</th><th>Availability</th><th>Actions</th></tr>";
+            props.forEach(function(p) {
+                var availColor = p.availability === 'Available' ? 'green' : (p.availability === 'Under Offer' ? '#d35400' : 'red');
+                html += "<tr>";
+                html += "<td>" + p.id + "</td>";
+                html += "<td><b>" + p.name + "</b></td>";
+                html += "<td>" + p.type + "</td>";
+                html += "<td>" + p.location + "</td>";
+                html += "<td>₹" + Number(p.price).toLocaleString('en-IN') + "</td>";
+                html += "<td style='color:" + availColor + "; font-weight:bold;'>" + p.availability + "</td>";
+                html += "<td>";
+                html += "<button type='button' style='padding:4px 10px; margin-right:5px;' onclick='viewDetails(" + p.id + ")'>View Details</button>";
+                html += "<button type='button' style='padding:4px 10px; background-color:#34495e; border-color:#2c3e50;' onclick='selectForEnquiry(" + p.id + ")'>Enquire</button>";
+                html += "</td>";
+                html += "</tr>";
+            });
+            html += "</table>";
+            container.innerHTML = html;
+        }
+
+        function applyFilters() {
+            var typeVal = document.getElementById("filter_type").value;
+            var locVal = document.getElementById("filter_location").value.trim().toLowerCase();
+            var minPrice = parseFloat(document.getElementById("filter_min_price").value) || 0;
+            var maxPrice = parseFloat(document.getElementById("filter_max_price").value) || Infinity;
+
+            var filtered = allProperties.filter(function(p) {
+                var matchesType = (typeVal === "All" || p.type.toLowerCase() === typeVal.toLowerCase());
+                var matchesLoc = (!locVal || p.location.toLowerCase().indexOf(locVal) !== -1);
+                var matchesPrice = (p.price >= minPrice && p.price <= maxPrice);
+                return matchesType && matchesLoc && matchesPrice;
+            });
+            renderProperties(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("filter_type").value = "All";
+            document.getElementById("filter_location").value = "";
+            document.getElementById("filter_min_price").value = "";
+            document.getElementById("filter_max_price").value = "";
+            renderProperties(allProperties);
+        }
+
+        function viewDetails(id) {
+            var prop = allProperties.find(function(p) { return p.id === id; });
+            if (!prop) return;
+            var html = "<table>";
+            html += "<tr><th style='width: 180px;'>Property Name</th><td><b>" + prop.name + "</b></td></tr>";
+            html += "<tr><th>Type</th><td>" + prop.type + "</td></tr>";
+            html += "<tr><th>Location</th><td>" + prop.location + "</td></tr>";
+            html += "<tr><th>Price</th><td>₹" + Number(prop.price).toLocaleString('en-IN') + "</td></tr>";
+            html += "<tr><th>Description</th><td>" + prop.description + "</td></tr>";
+            html += "<tr><th>Current Status</th><td><b>" + prop.availability + "</b></td></tr>";
+            html += "</table><br>";
+            document.getElementById("details_content").innerHTML = html;
+            document.getElementById("details_section").style.display = "block";
+            document.getElementById("details_section").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectForEnquiry(id) {
+            var select = document.getElementById("property_id");
+            select.value = id;
+            document.getElementById("customer_name").focus();
+            select.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function populateEnquiryDropdown(props) {
+            var select = document.getElementById("property_id");
+            select.innerHTML = '<option value="">-- Select Property --</option>';
+            props.forEach(function(p) {
+                select.innerHTML += '<option value="' + p.id + '">' + p.name + ' (' + p.type + ' in ' + p.location + ') - ₹' + Number(p.price).toLocaleString('en-IN') + '</option>';
+            });
+        }
+
+        window.onload = function() {
+            loadProperties();
+        };
+    </script>
+</body>
+</html>

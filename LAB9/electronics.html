@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Electronics Shopping System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 30px;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #1e4d6b;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        h2 {
+            color: #245b7a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2d6a8e;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #dcdcdc;
+            margin: 20px 0;
+        }
+        .section {
+            background-color: #fafbfc;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 18px;
+            margin: 18px 0;
+        }
+        label {
+            display: inline-block;
+            width: 170px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            vertical-align: top;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 280px;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+            border: 1px solid #b0c2d0;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="submit"],
+        input[type="button"],
+        button {
+            background-color: #2d6a8e;
+            color: #ffffff;
+            border: 1px solid #245b7a;
+            padding: 7px 18px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        input[type="submit"]:hover,
+        input[type="button"]:hover,
+        button:hover {
+            background-color: #1e4d6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background-color: #ffffff;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: #eef3f7;
+            color: #1e4d6b;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .notice {
+            color: #555;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        a {
+            color: #1e5a8a;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .filter-bar {
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ONLINE ELECTRONICS SHOPPING SYSTEM</h1>
+    <p style="text-align: center; color: #666;">Browse Gadgets, Check Availability & Place Orders</p>
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- USER SECTION                               -->
+    <!-- ========================================== -->
+    <h2>CUSTOMER STOREFRONT</h2>
+
+    <!-- 1, 2, 3: Available Products & Category Filter -->
+    <div class="section">
+        <h3>1. Available Electronic Products</h3>
+        <div class="filter-bar">
+            <label for="category_filter" style="width: auto; margin-right: 10px;">Filter by Category:</label>
+            <select id="category_filter" onchange="filterCategory()" style="width: 200px;">
+                <option value="All">All Categories</option>
+            </select>
+            <button type="button" onclick="loadProducts()">Refresh Products</button>
+        </div>
+        <div id="products_container">Loading products...</div>
+    </div>
+
+    <!-- 4, 5: Place Order Form -->
+    <div class="section">
+        <h3>2. Order Placement & Cart Checkout</h3>
+        <form action="/place_order" method="post">
+            <label for="product_id">Select Product:</label>
+            <select id="product_id" name="product_id" onchange="updateSelectedProductPrice()" required>
+                <option value="">-- Select Product --</option>
+            </select><br>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="1" required><br>
+
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" id="customer_name" name="customer_name" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required><br>
+
+            <label for="address">Delivery Address:</label>
+            <textarea id="address" name="address" rows="3" style="width: 280px;" required></textarea><br>
+
+            <input type="submit" value="Place Order">
+        </form>
+    </div>
+
+    <!-- 6: View Order Status -->
+    <div class="section">
+        <h3>3. View Order Status</h3>
+        <form action="/view_order_status" method="post">
+            <label for="search_input">Phone / Order ID:</label>
+            <input type="text" id="search_input" name="search" placeholder="Enter phone or order ID (or leave blank)">
+            <input type="submit" value="Track Order">
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- ADMIN SECTION LINK                         -->
+    <!-- ========================================== -->
+    <h2>STORE MANAGEMENT (ADMIN)</h2>
+    <div class="section">
+        <p>Manage product catalog, inventory stock & prices, view orders, and update shipping fulfillment status.</p>
+        <p><a href="/admin"><b>[ Go to Admin Panel &raquo; ]</b></a></p>
+    </div>
+
+    <script>
+        var allProducts = [];
+
+        function loadProducts() {
+            fetch("/api/products")
+                .then(function(res) { return res.json(); })
+                .then(function(products) {
+                    allProducts = products;
+                    populateCategoryDropdown(products);
+                    renderProductsTable(products);
+                    populateProductOrderDropdown(products);
+                });
+        }
+
+        function populateCategoryDropdown(products) {
+            var categories = ["All"];
+            products.forEach(function(p) {
+                if (categories.indexOf(p.category) === -1) {
+                    categories.push(p.category);
+                }
+            });
+            var catSelect = document.getElementById("category_filter");
+            var currentVal = catSelect.value || "All";
+            catSelect.innerHTML = "";
+            categories.forEach(function(c) {
+                var opt = document.createElement("option");
+                opt.value = c;
+                opt.textContent = c;
+                if (c === currentVal) opt.selected = true;
+                catSelect.appendChild(opt);
+            });
+        }
+
+        function renderProductsTable(products) {
+            var container = document.getElementById("products_container");
+            if (products.length === 0) {
+                container.innerHTML = "<p>No products available in this category.</p>";
+                return;
+            }
+            var html = "<table>";
+            html += "<tr><th>ID</th><th>Product Name</th><th>Category</th><th>Description</th><th>Price (₹)</th><th>Stock</th><th>Action</th></tr>";
+            products.forEach(function(p) {
+                var stockText = p.quantity > 0 ? p.quantity + " in stock" : "<span style='color:red;'>Out of Stock</span>";
+                var buttonDisabled = p.quantity <= 0 ? "disabled" : "";
+                html += "<tr>";
+                html += "<td>" + p.id + "</td>";
+                html += "<td><b>" + p.name + "</b></td>";
+                html += "<td>" + p.category + "</td>";
+                html += "<td>" + p.description + "</td>";
+                html += "<td>₹" + p.price.toFixed(2) + "</td>";
+                html += "<td>" + stockText + "</td>";
+                html += "<td><button type='button' onclick='selectForOrder(" + p.id + ")' " + buttonDisabled + ">Select Product</button></td>";
+                html += "</tr>";
+            });
+            html += "</table>";
+            container.innerHTML = html;
+        }
+
+        function filterCategory() {
+            var cat = document.getElementById("category_filter").value;
+            if (cat === "All") {
+                renderProductsTable(allProducts);
+            } else {
+                var filtered = allProducts.filter(function(p) {
+                    return p.category === cat;
+                });
+                renderProductsTable(filtered);
+            }
+        }
+
+        function populateProductOrderDropdown(products) {
+            var prodSelect = document.getElementById("product_id");
+            prodSelect.innerHTML = '<option value="">-- Select Product --</option>';
+            products.forEach(function(p) {
+                if (p.quantity > 0) {
+                    prodSelect.innerHTML += '<option value="' + p.id + '">' + p.name + ' - ₹' + p.price.toFixed(2) + ' (Stock: ' + p.quantity + ')</option>';
+                }
+            });
+        }
+
+        function selectForOrder(id) {
+            var prodSelect = document.getElementById("product_id");
+            prodSelect.value = id;
+            document.getElementById("quantity").focus();
+        }
+
+        function updateSelectedProductPrice() {
+            // Optional callback on change
+        }
+
+        window.onload = function() {
+            loadProducts();
+        };
+    </script>
+</body>
+</html>

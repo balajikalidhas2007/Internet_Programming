@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Appointment Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 30px;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #1e4d6b;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        h2 {
+            color: #245b7a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2d6a8e;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #dcdcdc;
+            margin: 20px 0;
+        }
+        .section {
+            background-color: #fafbfc;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 18px;
+            margin: 18px 0;
+        }
+        label {
+            display: inline-block;
+            width: 170px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            vertical-align: top;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 280px;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+            border: 1px solid #b0c2d0;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="submit"],
+        input[type="button"],
+        button {
+            background-color: #2d6a8e;
+            color: #ffffff;
+            border: 1px solid #245b7a;
+            padding: 7px 18px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        input[type="submit"]:hover,
+        input[type="button"]:hover,
+        button:hover {
+            background-color: #1e4d6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background-color: #ffffff;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: #eef3f7;
+            color: #1e4d6b;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .notice {
+            color: #555;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        a {
+            color: #1e5a8a;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>HOSPITAL APPOINTMENT BOOKING SYSTEM</h1>
+    <p style="text-align: center; color: #666;">Simple Healthcare Portal for Patients and Hospital Administration</p>
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- USER SECTION                               -->
+    <!-- ========================================== -->
+    <h2>PATIENT PORTAL</h2>
+
+    <!-- 1. View Hospitals -->
+    <div class="section">
+        <h3>1. List of Hospitals</h3>
+        <p class="notice">Click the button below to view all partner hospitals and their contact information.</p>
+        <button type="button" onclick="loadHospitals()">View Hospitals</button>
+        <div id="hospitals_container" style="margin-top: 10px;"></div>
+    </div>
+
+    <!-- 2. View Doctors & Specialties -->
+    <div class="section">
+        <h3>2. Doctors and Specialties</h3>
+        <p class="notice">View registered medical practitioners and their respective specialties and hospitals.</p>
+        <button type="button" onclick="loadDoctors()">View Doctors</button>
+        <div id="doctors_container" style="margin-top: 10px;"></div>
+    </div>
+
+    <!-- 3. Book Appointment -->
+    <div class="section">
+        <h3>3. Book an Appointment</h3>
+        <form action="/book_appointment" method="post">
+            <label for="patient_name">Patient Name:</label>
+            <input type="text" id="patient_name" name="patient_name" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required><br>
+
+            <label for="hospital_id">Select Hospital:</label>
+            <select id="hospital_id" name="hospital_id" onchange="filterDoctorsByHospital()" required>
+                <option value="">-- Select Hospital --</option>
+            </select><br>
+
+            <label for="doctor_id">Select Doctor:</label>
+            <select id="doctor_id" name="doctor_id" required>
+                <option value="">-- Select Doctor --</option>
+            </select><br>
+
+            <label for="date">Appointment Date:</label>
+            <input type="date" id="date" name="date" required><br>
+
+            <label for="time">Select Time Slot:</label>
+            <select id="time" name="time" required>
+                <option value="">-- Select Time Slot --</option>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:30 AM">11:30 AM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:30 PM">03:30 PM</option>
+                <option value="05:00 PM">05:00 PM</option>
+            </select><br>
+
+            <input type="submit" value="Book Appointment">
+        </form>
+    </div>
+
+    <!-- 4. View Appointment Status -->
+    <div class="section">
+        <h3>4. View Appointment Status</h3>
+        <form action="/view_status" method="post">
+            <label for="search_phone">Phone Number:</label>
+            <input type="text" id="search_phone" name="phone" placeholder="Enter phone number or leave blank">
+            <input type="submit" value="Check Status">
+        </form>
+    </div>
+
+    <!-- 5. Cancel Appointment -->
+    <div class="section">
+        <h3>5. Cancel Appointment</h3>
+        <form action="/cancel_appointment" method="post">
+            <label for="appointment_id">Appointment ID:</label>
+            <input type="number" id="appointment_id" name="appointment_id" required>
+            <input type="submit" value="Cancel Appointment">
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- ADMIN SECTION LINK                         -->
+    <!-- ========================================== -->
+    <h2>HOSPITAL ADMINISTRATION</h2>
+    <div class="section">
+        <p>Manage hospitals, add doctors with specialties, view all patient bookings, and update appointment statuses.</p>
+        <p><a href="/admin"><b>[ Go to Admin Panel &raquo; ]</b></a></p>
+    </div>
+
+    <script>
+        var allDoctors = [];
+
+        function loadHospitals() {
+            fetch("/hospitals_list")
+                .then(function(res) { return res.text(); })
+                .then(function(html) {
+                    document.getElementById("hospitals_container").innerHTML = html;
+                });
+        }
+
+        function loadDoctors() {
+            fetch("/doctors_list")
+                .then(function(res) { return res.text(); })
+                .then(function(html) {
+                    document.getElementById("doctors_container").innerHTML = html;
+                });
+        }
+
+        function loadBookingData() {
+            fetch("/get_booking_data")
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var hospitalSelect = document.getElementById("hospital_id");
+                    hospitalSelect.innerHTML = '<option value="">-- Select Hospital --</option>';
+                    data.hospitals.forEach(function(h) {
+                        hospitalSelect.innerHTML += '<option value="' + h.id + '">' + h.name + ' (' + h.location + ')</option>';
+                    });
+                    allDoctors = data.doctors;
+                    populateDoctorsDropdown(allDoctors);
+                });
+        }
+
+        function populateDoctorsDropdown(doctors) {
+            var doctorSelect = document.getElementById("doctor_id");
+            doctorSelect.innerHTML = '<option value="">-- Select Doctor --</option>';
+            doctors.forEach(function(d) {
+                doctorSelect.innerHTML += '<option value="' + d.id + '">' + d.name + ' - ' + d.specialty + ' (' + d.hospital_name + ')</option>';
+            });
+        }
+
+        function filterDoctorsByHospital() {
+            var selectedHospitalId = document.getElementById("hospital_id").value;
+            if (!selectedHospitalId) {
+                populateDoctorsDropdown(allDoctors);
+            } else {
+                var filtered = allDoctors.filter(function(d) {
+                    return String(d.hospital_id) === String(selectedHospitalId);
+                });
+                populateDoctorsDropdown(filtered);
+            }
+        }
+
+        window.onload = function() {
+            loadHospitals();
+            loadDoctors();
+            loadBookingData();
+        };
+    </script>
+</body>
+</html>
